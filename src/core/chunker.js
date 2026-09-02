@@ -1,4 +1,5 @@
 import fs from "fs";
+import crypto from "crypto";
 
 export function readFileLines(filePath){
     const content = fs.readFileSync(filePath, 'utf-8');
@@ -28,4 +29,10 @@ export function chunkLines(lines){
     chunks.push(currentChunk);
 
     return chunks;
+}
+
+export function hashContent(text){
+    const hash = crypto.createHash('sha256').update(text).digest('hex');
+
+    return hash;
 }

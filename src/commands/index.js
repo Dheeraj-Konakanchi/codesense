@@ -1,7 +1,9 @@
 import { walkDirectory } from "../core/fileWalker.js";
-import { readFileLines, chunkLines } from "../core/chunker.js";
+import { readFileLines, chunkLines, hashContent } from "../core/chunker.js";
+import { saveIndex } from "../storage/vectorStore.js";
+import { getEmbedding } from "../core/embeddings.js";
 
-export function runIndex(){
+export async function runIndex(){
     const allFiles = walkDirectory('.');
     const jsFiles = allFiles.filter((filePath)=> filePath.endsWith('.js'));
 
@@ -11,12 +13,27 @@ export function runIndex(){
         const lines = readFileLines(filePath);
         const chunks = chunkLines(lines);
 
-        const chunksWithFiles = chunks.map((chunk)=>{
-            return {...chunk, filePath : filePath};
-        });
+        for(const chunk of chunks){
+            const content = chunk.lines.join('\n');
+            if (content.trim() === '') {
+                continue;
+            }
+            const contentHash = hashContent(content);
+            const embedding = await getEmbedding(content);
 
-        allChunks.push(...chunksWithFiles);
+            const finalChunk = {
+                filePath : filePath,
+                startLine : chunk.startLine,
+                content : content,
+                contentHash : contentHash,
+                embedding : embedding
+            };
+
+            allChunks.push(finalChunk);
+        }
     }
 
-    console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks`);
+    saveIndex(allChunks, 'codesense-index.json');
 }
+
+console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks`);
