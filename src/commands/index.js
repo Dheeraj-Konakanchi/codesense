@@ -34,6 +34,7 @@ export async function runIndex(){
     }
 
     saveIndex(allChunks, 'codesense-index.json');
+
+    console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks`);
 }
 
-console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks`);
