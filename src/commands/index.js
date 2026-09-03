@@ -1,6 +1,6 @@
 import fs from "fs";
 import { walkDirectory } from "../core/fileWalker.js";
-import { readFileLines, chunkLines, hashContent } from "../core/chunker.js";
+import { readFileLines, chunkLines, hashContent, chunkFileAST } from "../core/chunker.js";
 import { loadIndex, saveIndex } from "../storage/vectorStore.js";
 import { getEmbedding } from "../core/embeddings.js";
 
@@ -25,7 +25,13 @@ export async function runIndex(){
 
     for(const filePath of jsFiles){
         const lines = readFileLines(filePath);
-        const chunks = chunkLines(lines);
+
+        let chunks;
+        try{
+            chunks = chunkFileAST(lines);
+        }catch(error){
+            chunks = chunkLines(lines);
+        }
 
         for(const chunk of chunks){
             const content = chunk.lines.join('\n');
