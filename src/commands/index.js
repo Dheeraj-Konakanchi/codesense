@@ -1,11 +1,25 @@
+import fs from "fs";
 import { walkDirectory } from "../core/fileWalker.js";
 import { readFileLines, chunkLines, hashContent } from "../core/chunker.js";
-import { saveIndex } from "../storage/vectorStore.js";
+import { loadIndex, saveIndex } from "../storage/vectorStore.js";
 import { getEmbedding } from "../core/embeddings.js";
 
 export async function runIndex(){
     const allFiles = walkDirectory('.');
     const jsFiles = allFiles.filter((filePath)=> filePath.endsWith('.js'));
+
+    let oldChunksByHash = {};
+
+    if(fs.existsSync('codesense-index.json')){
+        const oldChunks = loadIndex('codesense-index.json');
+
+        for(const oldChunk of oldChunks){
+            oldChunksByHash[oldChunk.contentHash]=oldChunk;
+        }
+    }
+
+    let reusedCount = 0;
+    let embeddedCount = 0;
 
     let allChunks = [];
 
@@ -19,7 +33,16 @@ export async function runIndex(){
                 continue;
             }
             const contentHash = hashContent(content);
-            const embedding = await getEmbedding(content);
+
+            let embedding;
+            if(oldChunksByHash[contentHash]){
+                embedding = oldChunksByHash[contentHash].embedding;
+                reusedCount++;
+            }
+            else{
+                embedding = await getEmbedding(content);
+                embeddedCount++;
+            }
 
             const finalChunk = {
                 filePath : filePath,
@@ -35,6 +58,6 @@ export async function runIndex(){
 
     saveIndex(allChunks, 'codesense-index.json');
 
-    console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks`);
+    console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks (${reusedCount} reused, ${embeddedCount} newly embedded)`);
 }
 
