@@ -7,6 +7,21 @@ const ast = parse(code, {
     sourceType : "module",
 });
 
-for (const node of ast.program.body){
-    console.log(node.type, node.loc.start.line, node.loc.end.line);
+function findFunctionBoundaries(ast){
+    const boundaries = [];
+
+    for(const node of ast.program.body){
+        let actualNode = node;
+        if(node.type === "ExportNamedDeclaration" && node.declaration){
+            actualNode=node.declaration;
+        }
+
+        if(actualNode.type === "FunctionDeclaration" || actualNode.type === "ClassDeclaration"){
+            boundaries.push({start: node.loc.start.line, end: node.loc.end.line});
+        }
+    }
+
+    return boundaries;
 }
+
+console.log(findFunctionBoundaries(ast));
