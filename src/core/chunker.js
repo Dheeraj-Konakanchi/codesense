@@ -65,6 +65,3 @@ export function chunkFileAST(lines){
 
     return chunks;
 }
-
-const lines = readFileLines('src/commands/ask.js');
-console.log(chunkFileAST(lines));
