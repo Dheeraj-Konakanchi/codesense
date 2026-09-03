@@ -1,3 +1,4 @@
+import { parse } from "@babel/parser";
 import fs from "fs";
 import crypto from "crypto";
 
@@ -36,3 +37,34 @@ export function hashContent(text){
 
     return hash;
 }
+
+export function chunkFileAST(lines){
+    const sourceCode = lines.join('\n');
+
+    const ast = parse(sourceCode, {
+        sourceType : "module",
+    });
+
+    const chunks = [];
+
+    for(const node of ast.program.body){
+        let actualNode = node;
+
+        if(node.type === 'ExportNamedDeclaration' && node.declaration){
+            actualNode = node.declaration;
+        }
+
+        if(actualNode.type === 'FunctionDeclaration' || actualNode.type === 'ClassDeclaration'){
+            const startLine = node.loc.start.line - 1;
+            const endLine = node.loc.end.line;
+            const chunkLinesArray = lines.slice(startLine, endLine);
+
+            chunks.push({startLine : startLine, lines : chunkLinesArray});
+        }
+    }
+
+    return chunks;
+}
+
+const lines = readFileLines('src/commands/ask.js');
+console.log(chunkFileAST(lines));
