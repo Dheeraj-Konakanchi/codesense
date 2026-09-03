@@ -13,8 +13,3 @@ export function buildPrompt(query, chunks){
     
     Question: ${query}`;
 }
-
-const testChunks = [
-  { filePath: 'test.js', startLine: 0, content: 'function hello() {}' }
-];
-console.log(buildPrompt('what does this do', testChunks));
