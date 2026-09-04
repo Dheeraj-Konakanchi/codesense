@@ -2,10 +2,10 @@ import fs from "fs";
 import { walkDirectory } from "../core/fileWalker.js";
 import { readFileLines, chunkLines, hashContent, chunkFileAST } from "../core/chunker.js";
 import { loadIndex, saveIndex } from "../storage/vectorStore.js";
-import { getEmbedding } from "../core/embeddings.js";
+import { getEmbedding, sleep } from "../core/embeddings.js";
 
-export async function runIndex(){
-    const allFiles = walkDirectory('.');
+export async function runIndex(directory = '.'){
+    const allFiles = walkDirectory(directory);
     const jsFiles = allFiles.filter((filePath)=> filePath.endsWith('.js'));
 
     let oldChunksByHash = {};
@@ -47,6 +47,7 @@ export async function runIndex(){
             }
             else{
                 embedding = await getEmbedding(content);
+                await sleep(1000);
                 embeddedCount++;
             }
 

@@ -12,3 +12,7 @@ export async function getEmbedding(text){
 
     return result.embeddings[0].values;
 }
+
+export function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}

@@ -11,7 +11,7 @@ program
     .version ('1.0.0');
 
 program
-    .command('index')
+    .command('index [directory]')
     .description('Build the search index for current Codebase')
     .action(runIndex);
 
