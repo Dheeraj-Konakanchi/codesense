@@ -1,7 +1,8 @@
 import 'dotenv/config';
+import { getApiKey } from './credentials.js';
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
+const ai = new GoogleGenAI({apiKey: getApiKey()});
 
 export async function getEmbedding(text){
     const result = await ai.models.embedContent({

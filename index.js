@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { runAsk } from "./src/commands/ask.js";
 import { runIndex } from "./src/commands/index.js";
 import { runExplain } from "./src/commands/explain.js";
+import { runConfig } from "./src/commands/config.js";
 
 const program = new Command();
 
@@ -11,6 +12,11 @@ program
     .name('codesense')
     .description('Search your Codebase in Plain English')
     .version ('1.0.0');
+
+program
+    .command('config <apiKey>')
+    .description('Save your Gemini API key')
+    .action(runConfig);
 
 program
     .command('index [directory]')
