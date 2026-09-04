@@ -5,13 +5,14 @@ import { loadIndex, saveIndex } from "../storage/vectorStore.js";
 import { getEmbedding, sleep } from "../core/embeddings.js";
 
 export async function runIndex(directory = '.'){
+    const indexFileName = directory === '.' ? 'codesense-index.json' : 'commander-index.json';
     const allFiles = walkDirectory(directory);
     const jsFiles = allFiles.filter((filePath)=> filePath.endsWith('.js'));
 
     let oldChunksByHash = {};
 
-    if(fs.existsSync('codesense-index.json')){
-        const oldChunks = loadIndex('codesense-index.json');
+    if(fs.existsSync(indexFileName)){
+        const oldChunks = loadIndex(indexFileName);
 
         for(const oldChunk of oldChunks){
             oldChunksByHash[oldChunk.contentHash]=oldChunk;
@@ -69,7 +70,7 @@ export async function runIndex(directory = '.'){
         }
     }
 
-    saveIndex(allChunks, 'codesense-index.json');
+    saveIndex(allChunks, indexFileName);
 
     console.log(`Processed ${jsFiles.length} files, created ${allChunks.length} chunks (${reusedCount} reused, ${embeddedCount} newly embedded)`);
 }

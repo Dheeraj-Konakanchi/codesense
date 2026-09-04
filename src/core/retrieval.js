@@ -2,8 +2,8 @@ import { loadIndex } from "../storage/vectorStore.js";
 import { getEmbedding } from "./embeddings.js";
 import { cosineSimilarity } from "./similarity.js";
 
-export async function retrieveTopChunks(query, topN = 5){
-    const chunks = loadIndex('codesense-index.json');
+export async function retrieveTopChunks(query, topN = 5, indexFile = 'codesense-index.json'){
+    const chunks = loadIndex(indexFile);
     const queryEmbedding = await getEmbedding(query);
 
     const chunksWithScore = chunks.map((chunk)=>{
