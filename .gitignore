@@ -1,3 +1,4 @@
 node_modules/
 .env
 codesense-index.json
+commander-index.json

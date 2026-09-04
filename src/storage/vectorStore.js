@@ -2,7 +2,10 @@ import fs from "fs";
 
 export function saveIndex(chunks, filePath){
     const jsonString = JSON.stringify(chunks, null, 2);
-    fs.writeFileSync(filePath, jsonString);
+    const tempPath = filePath + '.tmp';
+
+    fs.writeFileSync(tempPath, jsonString);
+    fs.renameSync(tempPath,filePath);
 }
 
 export function loadIndex(filePath){
