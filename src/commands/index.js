@@ -3,6 +3,7 @@ import { walkDirectory } from "../core/fileWalker.js";
 import { readFileLines, chunkLines, hashContent, chunkFileAST } from "../core/chunker.js";
 import { loadIndex, saveIndex } from "../storage/vectorStore.js";
 import { getEmbedding, sleep } from "../core/embeddings.js";
+import { retryWithBackoff } from "../core/retry.js";
 
 export async function runIndex(directory = '.'){
     const indexFileName = directory === '.' ? 'codesense-index.json' : 'commander-index.json';
@@ -53,7 +54,7 @@ export async function runIndex(directory = '.'){
                 reusedCount++;
             }
             else{
-                embedding = await getEmbedding(content);
+                embedding = await retryWithBackoff(() => getEmbedding(content));
                 await sleep(5000);
                 embeddedCount++;
             }
