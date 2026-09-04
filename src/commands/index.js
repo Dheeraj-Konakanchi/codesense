@@ -38,6 +38,12 @@ export async function runIndex(directory = '.'){
             if (content.trim() === '') {
                 continue;
             }
+
+            if (content.length > 10000) {
+                console.log(`Skipping oversized chunk in ${filePath} (${content.length} characters)`);
+                continue;
+            }
+
             const contentHash = hashContent(content);
 
             let embedding;
@@ -47,7 +53,7 @@ export async function runIndex(directory = '.'){
             }
             else{
                 embedding = await getEmbedding(content);
-                await sleep(1000);
+                await sleep(5000);
                 embeddedCount++;
             }
 
