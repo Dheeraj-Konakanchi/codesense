@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from "commander";
 import { runAsk } from "./src/commands/ask.js";
 import { runIndex } from "./src/commands/index.js";
